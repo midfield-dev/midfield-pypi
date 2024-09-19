@@ -6,7 +6,7 @@ class Midfield:
         self.api_key = api_key
         self.api_url = 'https://api.midfield.ai/api/prompt/'
 
-    def validate(self, prompt, validate_input, validate_output):
+    def validate(self, prompt, validate_input: bool = True, validate_output: bool = False):
         if not self.api_key:
             raise ValueError("API KEY is required")
 
@@ -22,6 +22,8 @@ class Midfield:
         }
         response = requests.post(self.api_url, json=payload, headers=headers)
         if response.status_code != 200:
-            raise Exception(f"Error: {response.json().get('error')}")
-
+            if validate_output:
+                raise Exception(f"Error: {response.json().get('error')},\nValidate Input: {response.json().get('input_result')},\nValidate Output: {response.json().get('output_result')}")
+            else:
+                raise Exception(f"Error: {response.json().get('error')},\nvalidate Input: {response.json().get('input_result')}")
         return response.json()
